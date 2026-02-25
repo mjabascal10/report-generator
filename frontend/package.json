@@ -1,0 +1,37 @@
+{
+  "name": "@report-generator/frontend",
+  "version": "1.0.0",
+  "description": "Angular 20+ frontend for Report Generator",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "dev": "ng serve --open",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^20.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/compiler": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/platform-browser-dynamic": "^20.0.0",
+    "@angular/router": "^20.0.0",
+    "ag-grid-angular": "^32.0.0",
+    "ag-grid-community": "^32.0.0",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.6.2",
+    "zone.js": "^0.14.2"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^20.0.0",
+    "@angular/cli": "^20.0.0",
+    "@angular/compiler-cli": "^20.0.0",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3"
+  }
+}
+

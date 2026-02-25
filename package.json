@@ -1,0 +1,19 @@
+{
+  "name": "report-generator",
+  "version": "1.0.0",
+  "description": "Asynchronous Report Generator - Monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "worker",
+    "frontend",
+    "shared"
+  ],
+  "scripts": {
+    "install": "npm install",
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm test --workspaces",
+    "clean": "rm -rf node_modules backend/node_modules worker/node_modules frontend/node_modules shared/node_modules && rm -rf backend/dist worker/dist frontend/dist shared/dist"
+  }
+}
