@@ -13,6 +13,7 @@ export function getRedisClient() {
 const QUEUE_NAME = 'report_queue';
 
 export async function enqueueReport(reportId: string): Promise<QueueJob> {
+
   const client = getRedisClient();
 
   const job: QueueJob = {
