@@ -1,0 +1,91 @@
+import { Injectable, signal } from '@angular/core';
+import { Report } from './report-api.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ReportSSEService {
+  private eventSource: EventSource | null = null;
+  private readonly connectionStatus = signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
+
+  getConnectionStatus() {
+    return this.connectionStatus.asReadonly();
+  }
+
+
+  connect(url: string, onMessage: (report: Report) => void, onError?: (error: Event) => void): void {
+    if (this.eventSource) {
+      console.warn('SSE connection already exists, closing previous connection');
+      this.disconnect();
+    }
+
+    console.log('Connecting to SSE stream:', url);
+    this.connectionStatus.set('connecting');
+
+    this.eventSource = new EventSource(url);
+
+    this.eventSource.onopen = () => {
+      console.log('SSE connection established');
+      this.connectionStatus.set('connected');
+    };
+
+    this.eventSource.onmessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        // Only process report updates, ignore connection messages
+        if (data.type === 'connection') {
+          console.log('SSE connection message:', data.message);
+          return;
+        }
+
+        // Map reportId to id for consistency with Report interface
+        const report: Report = {
+          ...data,
+          id: data.reportId || data.id // Handle both reportId and id
+        };
+
+        console.log('SSE message received:', report);
+        onMessage(report);
+      } catch (error) {
+        console.error('Error parsing SSE message:', error);
+      }
+    };
+
+    this.eventSource.onerror = (error: Event) => {
+      console.error('SSE connection error:', error);
+      this.connectionStatus.set('disconnected');
+
+      if (onError) {
+        onError(error);
+      }
+
+      // Auto-reconnect after 5 seconds
+      setTimeout(() => {
+        if (this.eventSource?.readyState === EventSource.CLOSED) {
+          console.log('Attempting to reconnect...');
+          this.connect(url, onMessage, onError);
+        }
+      }, 5000);
+    };
+  }
+
+  /**
+   * Disconnect from SSE stream
+   */
+  disconnect(): void {
+    if (this.eventSource) {
+      console.log('Disconnecting from SSE stream');
+      this.eventSource.close();
+      this.eventSource = null;
+      this.connectionStatus.set('disconnected');
+    }
+  }
+
+  /**
+   * Check if connected
+   */
+  isConnected(): boolean {
+    return this.eventSource !== null && this.eventSource.readyState === EventSource.OPEN;
+  }
+}
+
