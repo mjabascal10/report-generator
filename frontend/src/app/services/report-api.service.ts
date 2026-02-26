@@ -24,10 +24,7 @@ export interface CreateReportRequest {
 })
 export class ReportApiService {
   private readonly http = inject(HttpClient);
-  // Use relative URL in production (proxied by nginx), localhost in development
-  private readonly API_URL = window.location.hostname === 'localhost'
-    ? 'http://localhost:3000/api/reports'
-    : '/api/reports';
+  private readonly API_URL = 'http://localhost:3000/api/reports';
 
   /**
    * Get all reports

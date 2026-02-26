@@ -6,7 +6,8 @@ import { Report } from './report-api.service';
 })
 export class ReportSSEService {
   private eventSource: EventSource | null = null;
-  private readonly connectionStatus = signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
+  private readonly connectionStatus =
+    signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
 
   getConnectionStatus() {
     return this.connectionStatus.asReadonly();
@@ -31,16 +32,15 @@ export class ReportSSEService {
     this.eventSource.onmessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        // Only process report updates, ignore connection messages
+
         if (data.type === 'connection') {
           console.log('SSE connection message:', data.message);
           return;
         }
 
-        // Map reportId to id for consistency with Report interface
         const report: Report = {
           ...data,
-          id: data.reportId || data.id // Handle both reportId and id
+          id: data.reportId || data.id
         };
 
         console.log('SSE message received:', report);
@@ -76,9 +76,6 @@ export class ReportSSEService {
     }
   }
 
-  /**
-   * Check if connected
-   */
   isConnected(): boolean {
     return this.eventSource !== null && this.eventSource.readyState === EventSource.OPEN;
   }
