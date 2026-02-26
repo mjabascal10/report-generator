@@ -1,11 +1,9 @@
 import { Report } from '../models/report';
-import { CreateReportRequest } from '@report-generator/shared';
-import { enqueueReport } from './redis.service';
+import { CreateReportRequest, queueService } from '@report-generator/shared';
 
 export class ReportService {
 
   async createReport(data: CreateReportRequest) {
-
     if (!data.name || !data.name.trim()) {
       throw new Error('Report name is required');
     }
@@ -20,7 +18,7 @@ export class ReportService {
       status: 'PENDING',
     });
 
-    await enqueueReport(report.id);
+    await queueService.enqueueReport(report.id);
 
     return report.toJSON();
   }

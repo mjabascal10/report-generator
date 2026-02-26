@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { reportService } from '../services/report.service';
-import { subscribeToUpdates } from '../services/redis.service';
+import { queueService } from '@report-generator/shared';
 import {CreateReportDto} from "../dtos/create-report.dto";
 import {ReportParamsDto} from "../dtos/report-params.dto";
 import {toReportResponse} from "../mappers/report.mapper";
 import {logger} from "@report-generator/shared";
+
 
 export async function createReport( req: Request<{}, {}, CreateReportDto>,
                                     res: Response,
@@ -37,7 +38,6 @@ export async function getAllReports(req: Request, res: Response, next: NextFunct
 }
 
 export async function streamReports(req: Request, res: Response, next: NextFunction) {
-
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -45,7 +45,7 @@ export async function streamReports(req: Request, res: Response, next: NextFunct
     res.write('data: {"type":"connection","message":"SSE connected"}\n\n');
 
     try {
-        const unsubscribe = await subscribeToUpdates((update) => {
+        const unsubscribe = await queueService.subscribeToUpdates((update) => {
             logger.debug(
                 { update  },
                 'Sending SSE update'

@@ -1,15 +1,14 @@
 import { logger, initializeDatabase, initializeRedis } from '@report-generator/shared';
-import { WorkerService } from './services/worker.service';
+import {workerService} from './services/worker.service';
 import { initializeReportModel } from './models/report';
 
-/**
- * Initialize all connections (Database, Redis)
- * Throws error if any connection fails
- */
+
 async function initializeConnections(): Promise<void> {
+
   logger.info('Initializing Worker...');
 
   try {
+
     await initializeDatabase();
     logger.info('PostgreSQL connected');
 
@@ -30,18 +29,15 @@ async function initializeConnections(): Promise<void> {
   }
 }
 
-/**
- * Bootstrap the worker application
- */
 export async function bootstrap(): Promise<void> {
   try {
     await initializeConnections();
     logger.info('All connections initialized successfully');
 
-    const workerService = new WorkerService();
     logger.info('Worker service created, starting job processing...');
 
     await workerService.start();
+
   } catch (error) {
     logger.error({ error }, 'Fatal error during bootstrap');
     process.exit(1);

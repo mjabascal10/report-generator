@@ -1,35 +1,25 @@
-import { logger, getRedisClient } from '@report-generator/shared';
-import { QueueService } from './queue.service';
+import { logger, queueService } from '@report-generator/shared';
 import { ReportProcessorService } from './report-processor.service';
 
-const POLL_INTERVAL = 1000; // 1 second between retry attempts
+const POLL_INTERVAL = 1000;
 
 export class WorkerService {
-  private queueService: QueueService;
+
   private processorService: ReportProcessorService;
 
   constructor() {
-    this.queueService = new QueueService(getRedisClient());
     this.processorService = new ReportProcessorService();
   }
 
-  /**
-   * Start the main worker loop
-   * Continuously polls the queue and processes jobs
-   */
   async start(): Promise<void> {
     logger.info('Worker service started');
     await this.processJobsLoop();
   }
 
-  /**
-   * Main processing loop
-   * Continuously dequeues jobs and processes them
-   */
   private async processJobsLoop(): Promise<void> {
     while (true) {
       try {
-        const job = await this.queueService.dequeueJob();
+        const job = await queueService.dequeueReport();
 
         if (!job) {
           logger.debug('Waiting for jobs...');
@@ -41,17 +31,23 @@ export class WorkerService {
         await this.processorService.processReport(job.reportId);
 
       } catch (error) {
-        logger.error({ error }, 'Error in processing loop');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorStack = error instanceof Error ? error.stack : undefined;
+        logger.error({
+          error: errorMessage,
+          stack: errorStack,
+          errorType: typeof error,
+          errorObject: error
+        }, 'Error in processing loop');
         await this.sleep(POLL_INTERVAL);
       }
     }
   }
 
-  /**
-   * Utility function to sleep for a given duration
-   */
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
+
+export const workerService = new WorkerService();
 

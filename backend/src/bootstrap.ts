@@ -1,6 +1,5 @@
-import { logger } from '@report-generator/shared';
+import { logger, initializeRedis } from '@report-generator/shared';
 import { initializeDatabase } from './database/connection';
-import { initializeRedis } from './services/redis.service';
 import { app } from './app';
 import { config } from './config';
 

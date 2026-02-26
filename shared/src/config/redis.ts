@@ -3,11 +3,8 @@ import { logger } from '../logger';
 
 let redisClientInstance: RedisClientType | null = null;
 
-/**
- * Initialize Redis client connection
- * Returns singleton instance
- */
 export async function initializeRedis(): Promise<RedisClientType> {
+
   if (redisClientInstance) {
     return redisClientInstance;
   }
@@ -40,9 +37,7 @@ export async function initializeRedis(): Promise<RedisClientType> {
   }
 }
 
-/**
- * Get existing Redis client instance
- */
+
 export function getRedisClient(): RedisClientType {
   if (!redisClientInstance) {
     throw new Error('Redis client not initialized. Call initializeRedis() first.');
@@ -50,9 +45,7 @@ export function getRedisClient(): RedisClientType {
   return redisClientInstance;
 }
 
-/**
- * Close Redis connection
- */
+
 export async function closeRedis(): Promise<void> {
   if (redisClientInstance) {
     await redisClientInstance.quit();
