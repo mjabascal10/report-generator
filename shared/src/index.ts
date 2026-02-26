@@ -1,30 +1,20 @@
-// Shared types and interfaces
-export interface Report {
-  id: string;
-  name: string;
-  requestedBy: string;
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-  createdAt: Date;
-  updatedAt: Date;
-  completedAt?: Date;
-  errorMessage?: string;
-}
+// ============================================
+// TYPES & INTERFACES
+// ============================================
 
-export interface CreateReportRequest {
-  name: string;
-  requestedBy: string;
-}
+export * from './types/report';
+export * from './types/queue';
+export * from './types/report-status';
 
-export interface ReportStatusUpdate {
-  reportId: string;
-  status: Report['status'];
-  updatedAt: Date;
-  errorMessage?: string;
-}
+// ============================================
+// LOGGER
+// ============================================
 
-export interface QueueJob {
-  reportId: string;
-  jobId: string;
-  createdAt: Date;
-}
+export * from './logger';
+
+// ============================================
+// ERRORS
+// ============================================
+
+export * from './errors/domain-error';
 
