@@ -8,7 +8,7 @@ export const app = express();
 
 setupMiddleware(app);
 
-app.use('/reports', routes);
+app.use('/api/reports', routes);
 
 setupHealthCheck(app);
 
