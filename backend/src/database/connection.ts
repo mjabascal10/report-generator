@@ -1,31 +1,17 @@
-import { Sequelize } from 'sequelize';
-import {config} from "../config";
-
-export const sequelize = new Sequelize(
-    config.database.database,
-    config.database.username,
-    config.database.password,
-    {
-        host: config.database.host,
-        port: config.database.port,
-        dialect: 'postgres',
-        logging: config.server.nodeEnv === 'development' ? console.log : false,
-        pool: {
-            min: 0,
-            max: 5,
-        },
-    }
-);
+import { initializeDatabase as initDbFromShared, getDatabase } from '@report-generator/shared';
+import { logger } from '@report-generator/shared';
+import { initializeReportModel } from '../models/report';
 
 export async function initializeDatabase() {
-    try {
-        await sequelize.authenticate();
-        console.log('Successfully connected to PostgreSQL');
+  try {
+    const sequelize = await initDbFromShared();
 
-        await sequelize.sync({ alter: false });
-        console.log('Models synchronized with the database');
-    } catch (error) {
-        console.error('✗ Failed to connect to the database:', error);
-        process.exit(1);
-    }
+    initializeReportModel();
+
+    await sequelize.sync({ alter: false });
+    logger.info('Models synchronized with the database');
+  } catch (error) {
+    logger.error({ error }, 'Failed to initialize database');
+    process.exit(1);
+  }
 }

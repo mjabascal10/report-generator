@@ -1,5 +1,5 @@
 import { DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
-import { sequelize } from '../database/connection';
+import { getDatabase } from '@report-generator/shared';
 
 export class Report extends Model<InferAttributes<Report>, InferCreationAttributes<Report>> {
 
@@ -13,48 +13,50 @@ export class Report extends Model<InferAttributes<Report>, InferCreationAttribut
   declare errorMessage?: string | null;
 }
 
-Report.init(
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
+export function initializeReportModel() {
+  Report.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
-    },
-    requestedBy: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
+      requestedBy: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      status: {
+        type: DataTypes.ENUM('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED'),
+        defaultValue: 'PENDING',
+        allowNull: false,
+      },
+      completedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      errorMessage: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      createdAt: DataTypes.DATE,
+      updatedAt: DataTypes.DATE,
     },
-    status: {
-      type: DataTypes.ENUM('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED'),
-      defaultValue: 'PENDING',
-      allowNull: false,
-    },
-    completedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    errorMessage: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
-  },
-  {
-    sequelize,
-    modelName: 'Report',
-    tableName: 'reports',
-    timestamps: true,
-  }
-);
+    {
+      sequelize: getDatabase(),
+      modelName: 'Report',
+      tableName: 'reports',
+      timestamps: true,
+    }
+  );
+}
 

@@ -1,9 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { reportService } from '../services/report.service';
 import { subscribeToUpdates } from '../services/redis.service';
-import {logger} from "../config/logger";
+import {CreateReportDto} from "../dtos/create-report.dto";
+import {ReportParamsDto} from "../dtos/report-params.dto";
+import {toReportResponse} from "../mappers/report.mapper";
+import {logger} from "@report-generator/shared";
 
-export async function createReport(req: Request, res: Response, next: NextFunction) {
+export async function createReport( req: Request<{}, {}, CreateReportDto>,
+                                    res: Response,
+                                    next: NextFunction) {
     try {
         const { name, requestedBy } = req.body;
         const report = await reportService.createReport({ name, requestedBy });
@@ -14,7 +19,7 @@ export async function createReport(req: Request, res: Response, next: NextFuncti
             'Report created successfully'
         );
 
-        res.status(201).json(report);
+        res.status(201).json(toReportResponse(report));
     } catch (error) {
         next(error);
     }
@@ -24,8 +29,8 @@ export async function getAllReports(req: Request, res: Response, next: NextFunct
     try {
         const reports = await reportService.getAllReports();
         logger.info('Reports fetched successfully');
-        
-        res.json(reports);
+
+        res.json(reports.map(toReportResponse));
     } catch (error) {
         next(error);
     }
@@ -58,7 +63,9 @@ export async function streamReports(req: Request, res: Response, next: NextFunct
     }
 }
 
-export async function getReportById(req: Request, res: Response, next: NextFunction) {
+export async function getReportById(req: Request<ReportParamsDto>,
+                                    res: Response,
+                                    next: NextFunction) {
     try {
         const report = await reportService.getReportById(req.params.id);
 
@@ -67,7 +74,7 @@ export async function getReportById(req: Request, res: Response, next: NextFunct
             'Report fetched successfully'
         );
 
-        res.json(report);
+        res.json(toReportResponse(report));
     } catch (error) {
         next(error);
     }
