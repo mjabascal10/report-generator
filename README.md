@@ -149,10 +149,10 @@ Angular 20+ application with ag-Grid table to display reports and form to create
 ## Setup Instructions: Running Locally
 
 ### Prerequisites
-- **Node.js** v20+ ([Download](https://nodejs.org/))
+- **Node.js** v20+ 
 - **npm** v9+
-- **PostgreSQL** 12+ ([Download](https://www.postgresql.org/download/))
-- **Redis** 6+ ([Download](https://redis.io/download/))
+- **PostgreSQL** 12+ 
+- **Redis** 6+ 
 
 ### Step 1: Clone and Install Dependencies
 
