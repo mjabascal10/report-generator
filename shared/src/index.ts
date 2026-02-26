@@ -13,6 +13,13 @@ export * from './types/report-status';
 export * from './logger';
 
 // ============================================
+// CONFIGURATION
+// ============================================
+
+export * from './config/database';
+export * from './config/redis';
+
+// ============================================
 // ERRORS
 // ============================================
 
