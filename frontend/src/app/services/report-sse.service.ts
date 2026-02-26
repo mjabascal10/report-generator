@@ -12,10 +12,9 @@ export class ReportSSEService {
     return this.connectionStatus.asReadonly();
   }
 
-
   connect(url: string, onMessage: (report: Report) => void, onError?: (error: Event) => void): void {
+
     if (this.eventSource) {
-      console.warn('SSE connection already exists, closing previous connection');
       this.disconnect();
     }
 
@@ -69,12 +68,8 @@ export class ReportSSEService {
     };
   }
 
-  /**
-   * Disconnect from SSE stream
-   */
   disconnect(): void {
     if (this.eventSource) {
-      console.log('Disconnecting from SSE stream');
       this.eventSource.close();
       this.eventSource = null;
       this.connectionStatus.set('disconnected');
