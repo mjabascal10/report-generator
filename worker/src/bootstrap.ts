@@ -1,6 +1,6 @@
 import { logger, initializeDatabase, initializeRedis } from '@report-generator/shared';
 import { WorkerService } from './services/worker.service';
-import { initializeReportModel } from './models/Report';
+import { initializeReportModel } from './models/report';
 
 /**
  * Initialize all connections (Database, Redis)

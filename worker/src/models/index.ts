@@ -1,4 +1,4 @@
-import Report from './Report';
+import Report from './report';
 
 export { Report };
 

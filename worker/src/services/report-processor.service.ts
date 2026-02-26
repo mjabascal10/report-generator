@@ -1,5 +1,5 @@
 import { logger, getRedisClient } from '@report-generator/shared';
-import Report from '../models/Report';
+import Report from '../models/report';
 import { QueueService } from './queue.service';
 
 export class ReportProcessorService {
