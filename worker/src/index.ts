@@ -1,3 +1,8 @@
-// Worker placeholder
-console.log('Worker Process - Ready for implementation');
+import { bootstrap, setupShutdownHandlers } from './bootstrap';
+
+// Setup graceful shutdown handlers
+setupShutdownHandlers();
+
+// Start the worker
+bootstrap();
 
