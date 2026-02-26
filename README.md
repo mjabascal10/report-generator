@@ -215,7 +215,19 @@ sudo systemctl start redis-server
 # Start PostgreSQL and Redis from your installations
 ```
 
-### Step 5: Run the Application
+### Step 5: Compile Shared Workspace
+
+Before running the backend and worker, you need to compile the shared workspace (this generates TypeScript to JavaScript in the `dist/` folder):
+
+```bash
+npm run build --workspace=shared
+```
+
+This will generate:
+- `shared/dist/index.js` - Compiled JavaScript
+- `shared/dist/index.d.ts` - TypeScript type definitions
+
+### Step 6: Run the Application
 
 Open **three terminal windows** and run each service:
 
@@ -242,7 +254,7 @@ Expected output:
 ```
 ✓ PostgreSQL connected
 ✓ Redis connected
-  Worker started, listening to queue...
+Worker started, listening to queue...
 ```
 
 #### Terminal 3: Frontend (Port 4200)
@@ -258,7 +270,7 @@ Expected output:
 ⠙ Bundling...
 ```
 
-### Step 6: Access the Application
+### Step 7: Access the Application
 
 Open your browser and navigate to:
 
