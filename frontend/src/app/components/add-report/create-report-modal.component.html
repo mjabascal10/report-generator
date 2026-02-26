@@ -1,0 +1,57 @@
+<div class="modal-header">
+  <h4 class="modal-title">📊 Generate New Report</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<form (ngSubmit)="onSubmit()" #form="ngForm">
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="reportName" class="form-label">Report Name *</label>
+      <input
+        type="text"
+        class="form-control"
+        id="reportName"
+        name="reportName"
+        [(ngModel)]="reportName"
+        required
+        placeholder="e.g., Sales Report Q1"
+        #nameInput="ngModel"
+        [class.is-invalid]="nameInput.invalid && nameInput.touched"
+      />
+      @if (nameInput.invalid && nameInput.touched) {
+        <div class="invalid-feedback d-block">
+          Report name is required
+        </div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="requestedBy" class="form-label">Requested By *</label>
+      <input
+        type="text"
+        class="form-control"
+        id="requestedBy"
+        name="requestedBy"
+        [(ngModel)]="requestedBy"
+        required
+        placeholder="e.g., John Doe"
+        #requestedByInput="ngModel"
+        [class.is-invalid]="requestedByInput.invalid && requestedByInput.touched"
+      />
+      @if (requestedByInput.invalid && requestedByInput.touched) {
+        <div class="invalid-feedback d-block">
+          Requested by is required
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">
+      Cancel
+    </button>
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+      <i class="bi bi-file-earmark-plus"></i> Generate Report
+    </button>
+  </div>
+</form>
