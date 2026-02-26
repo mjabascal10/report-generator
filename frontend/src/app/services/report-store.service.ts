@@ -1,6 +1,7 @@
-import {Injectable, signal, computed, inject} from '@angular/core';
+import {Injectable, signal, computed, inject, DestroyRef} from '@angular/core';
 import {Report, ReportApiService} from './report-api.service';
 import {ReportSSEService} from './report-sse.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ export class ReportStoreService {
 
   private readonly apiService = inject(ReportApiService);
   private readonly sseService = inject(ReportSSEService);
+  private readonly destroyRef = inject(DestroyRef);
 
 
   private readonly reports = signal<Report[]>([]);
@@ -55,34 +57,42 @@ export class ReportStoreService {
     this.loading.set(true);
     this.error.set(null);
 
-    this.apiService.getAllReports().subscribe({
-      next: (reports) => {
-        this.reports.set(reports);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading reports:', err);
-        this.error.set('Failed to connect to backend. Make sure the API server is running on http://localhost:3000');
-        this.loading.set(false);
-      }
-    });
+    this.apiService.getAllReports()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (reports) => {
+          this.reports.set(reports);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading reports:', err);
+          this.error.set('Failed to connect to backend. Make sure the API server is running on http://localhost:3000');
+          this.loading.set(false);
+        }
+      });
   }
 
   createReport(name: string, requestedBy: string): void {
     this.loading.set(true);
     this.error.set(null);
 
-    this.apiService.createReport({name, requestedBy}).subscribe({
-      next: (newReport) => {
-        this.reports.update(reports => [newReport, ...reports]);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error creating report:', err);
-        this.error.set('Failed to create report');
-        this.loading.set(false);
-      }
-    });
+    this.apiService.createReport({name, requestedBy})
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (newReport) => {
+          this.reports.update(reports => [newReport, ...reports]);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          console.error('Error creating report:', err);
+          this.error.set('Failed to create report');
+          this.loading.set(false);
+        }
+      });
   }
 
   updateReport(updatedReport: Report): void {

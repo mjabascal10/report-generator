@@ -5,28 +5,44 @@ import { Report } from './report-api.service';
   providedIn: 'root'
 })
 export class ReportSSEService {
+
   private eventSource: EventSource | null = null;
   private readonly connectionStatus =
     signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 5;
+  private reconnectDelay = 5000;
+  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
   getConnectionStatus() {
     return this.connectionStatus.asReadonly();
   }
 
   connect(url: string, onMessage: (report: Report) => void, onError?: (error: Event) => void): void {
-
     if (this.eventSource) {
       this.disconnect();
     }
 
+    this.reconnectAttempts = 0;
     console.log('Connecting to SSE stream:', url);
-    this.connectionStatus.set('connecting');
+    this._doConnect(url, onMessage, onError);
+  }
 
+  private _doConnect(url: string, onMessage: (report: Report) => void, onError?: (error: Event) => void): void {
+
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.error('Max reconnect attempts reached');
+      this.connectionStatus.set('disconnected');
+      return;
+    }
+
+    this.connectionStatus.set('connecting');
     this.eventSource = new EventSource(url);
 
     this.eventSource.onopen = () => {
       console.log('SSE connection established');
       this.connectionStatus.set('connected');
+      this.reconnectAttempts = 0;
     };
 
     this.eventSource.onmessage = (event: MessageEvent) => {
@@ -58,21 +74,33 @@ export class ReportSSEService {
         onError(error);
       }
 
-      // Auto-reconnect after 5 seconds
-      setTimeout(() => {
-        if (this.eventSource?.readyState === EventSource.CLOSED) {
-          console.log('Attempting to reconnect...');
-          this.connect(url, onMessage, onError);
-        }
-      }, 5000);
+      this.reconnectAttempts++;
+      console.log(`Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+
+      if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        this.reconnectTimeout = setTimeout(() => {
+          if (this.eventSource?.readyState === EventSource.CLOSED) {
+            console.log('Attempting to reconnect...');
+            this._doConnect(url, onMessage, onError);
+          }
+        }, this.reconnectDelay);
+      }
     };
   }
 
   disconnect(): void {
+    this.reconnectAttempts = this.maxReconnectAttempts;
+
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+
     if (this.eventSource) {
       this.eventSource.close();
       this.eventSource = null;
       this.connectionStatus.set('disconnected');
+      console.log('SSE connection closed');
     }
   }
 
