@@ -1,85 +1,88 @@
 # Asynchronous Report Generator - Monorepo
 
-Este es un monorepo de Node.js/TypeScript que implementa un sistema generador de reportes asincrónico usando npm workspaces.
+This is a Node.js/TypeScript monorepo that implements an asynchronous report generation system using npm workspaces.
 
-## Estructura del Monorepo
+## Monorepo Structure
 
 ```
 report-generator/
-├── backend/              # API Express (puerto 3000)
-├── worker/              # Procesador de trabajos en background
-├── frontend/            # Angular 20+ (puerto 4200)
-├── shared/              # Tipos e interfaces compartidas
-├── tsconfig.base.json   # Configuración base de TypeScript
-├── package.json         # Configuración de workspaces
+├── backend/              # Express API (port 3000)
+├── worker/              # Background job processor
+├── frontend/            # Angular 20+ (port 4200)
+├── shared/              # Shared types and interfaces
+├── tsconfig.base.json   # TypeScript base configuration
+├── package.json         # Workspace configuration
 └── README.md
 ```
 
 ## Workspaces
 
 ### 1. **Shared** (`@report-generator/shared`)
-Contiene tipos, interfaces y utilidades compartidas entre backend, worker y frontend.
+Contains shared types, interfaces, and utilities between backend, worker, and frontend.
 
-**Archivos clave:**
-- `src/index.ts` - Definiciones de tipos
+**Key files:**
+- `src/index.ts` - Type definitions
+- `src/config/database.ts` - Database connection singleton
+- `src/config/redis.ts` - Redis connection singleton
+- `src/logger/index.ts` - Centralized Pino logger
 
 ### 2. **Backend** (`@report-generator/backend`)
-API REST Express que expone endpoints para crear y consultar reportes, y Server-Sent Events (SSE) para notificaciones en tiempo real.
+Express REST API that exposes endpoints to create and query reports, and Server-Sent Events (SSE) for real-time notifications.
 
-**Dependencias:**
+**Dependencies:**
 - Express
 - Sequelize + PostgreSQL
 - Redis
 - CORS
 
 **Scripts:**
-- `npm run dev` - Inicia el servidor en modo desarrollo (ts-node)
-- `npm run build` - Compila TypeScript
-- `npm start` - Ejecuta la versión compilada
+- `npm run dev` - Start server in development mode (ts-node)
+- `npm run build` - Compile TypeScript
+- `npm start` - Run compiled version
 
 ### 3. **Worker** (`@report-generator/worker`)
-Proceso background que consume trabajos de la cola Redis y procesa reportes.
+Background process that consumes jobs from Redis queue and processes reports.
 
-**Dependencias:**
+**Dependencies:**
 - Sequelize + PostgreSQL
 - Redis
 
 **Scripts:**
-- `npm run dev` - Inicia el worker en modo desarrollo
-- `npm run build` - Compila TypeScript
-- `npm start` - Ejecuta la versión compilada
+- `npm run dev` - Start worker in development mode
+- `npm run build` - Compile TypeScript
+- `npm start` - Run compiled version
 
 ### 4. **Frontend** (`@report-generator/frontend`)
-Aplicación Angular 20+ con tabla ag-Grid para mostrar reportes y formulario para crear nuevos.
+Angular 20+ application with ag-Grid table to display reports and form to create new ones.
 
-**Dependencias:**
+**Dependencies:**
 - Angular 20+
 - ag-Grid
 - RxJS
 
 **Scripts:**
-- `npm run dev` - Inicia el servidor de desarrollo de Angular
-- `npm run build` - Construye la aplicación para producción
-- `npm test` - Ejecuta tests
+- `npm run dev` - Start Angular development server
+- `npm run build` - Build application for production
+- `npm test` - Run tests
 
-## Instalación
+## Installation
 
 ```bash
-# Instalar todas las dependencias de todos los workspaces
+# Install all dependencies for all workspaces
 npm install
 
-# O usar npm workspaces explícitamente
+# Or use npm workspaces explicitly
 npm install --workspaces
 ```
 
-## Comandos
+## Commands
 
-### Desarrollo
+### Development
 ```bash
-# Ejecutar todos los workspaces en modo desarrollo
+# Run all workspaces in development mode
 npm run dev
 
-# Ejecutar un workspace específico
+# Run a specific workspace
 npm run dev --workspace=backend
 npm run dev --workspace=worker
 npm run dev --workspace=frontend
@@ -88,50 +91,78 @@ npm run dev --workspace=shared
 
 ### Build
 ```bash
-# Compilar todos los workspaces
+# Build all workspaces
 npm run build
 
-# Compilar un workspace específico
+# Build a specific workspace
 npm run build --workspace=backend
 ```
 
-### Limpieza
+### Clean
 ```bash
-# Eliminar node_modules y dist de todos los workspaces
+# Remove node_modules and dist from all workspaces
 npm run clean
 ```
 
-## Configuración
+## Configuration
 
-### Requisitos previos
-- Node.js v18+
+### Prerequisites
+- Node.js v20+
 - npm v9+
 - PostgreSQL
 - Redis
 
-### Variables de entorno
+### Environment Variables
 
-Crear archivos `.env` en cada workspace según sea necesario.
+Create a `.env` file in the project root with the following variables:
 
-## Flujo de Datos
+```bash
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=report_generator
 
-1. **Cliente** → POST `/api/reports` (Backend)
-2. **Backend** → Valida, crea en DB, encola en Redis
-3. **Backend** → Retorna reporte (status: PENDING)
-4. **Worker** → Consume job de Redis, actualiza status a PROCESSING
-5. **Worker** → Publica update via Redis Pub/Sub
-6. **Backend** → Recibe update, publica via SSE
-7. **Frontend** → Recibe update via EventSource, actualiza UI
-8. **Worker** → Completa procesamiento, actualiza status a COMPLETED
+# Redis Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
 
-## Próximos pasos
+# Server Configuration
+NODE_ENV=development
+PORT=3000
 
-1. Implementar **shared** - Tipos e interfaces
-2. Implementar **backend** - API REST y SSE
-3. Implementar **worker** - Procesador de trabajos
-4. Implementar **frontend** - Interfaz Angular
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:4200
+```
 
----
+See `.env.example` for a template.
 
-**Nota:** Este proyecto está estructurado como un monorepo moderno. Cada workspace es independiente pero comparte tipos a través de `shared`.
+## Data Flow
+
+1. **Client** → POST `/api/reports` (Backend)
+2. **Backend** → Validates, creates in DB, enqueues to Redis
+3. **Backend** → Returns report (status: PENDING)
+4. **Worker** → Consumes job from Redis, updates status to PROCESSING
+5. **Worker** → Publishes update via Redis Pub/Sub
+6. **Backend** → Receives update, publishes via SSE
+7. **Frontend** → Receives update via EventSource, updates UI
+8. **Worker** → Completes processing, updates status to COMPLETED
+
+## Architecture Highlights
+
+### Shared Connections
+Both backend and worker use the **same connection instances** from `shared`:
+- PostgreSQL connection via `initializeDatabase()` and `getDatabase()`
+- Redis connection via `initializeRedis()` and `getRedisClient()`
+- Centralized logger via Pino
+
+### Bootstrap Pattern
+Both backend and worker follow the same initialization pattern:
+- `index.ts` - Entry point (calls bootstrap)
+- `bootstrap.ts` - Handles connection initialization and graceful shutdown
+- Clean separation of concerns
+
+
+**Note:** This project is structured as a modern monorepo. Each workspace is independent but shares types and utilities through `shared`.
 
