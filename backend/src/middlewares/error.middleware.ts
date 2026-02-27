@@ -5,7 +5,6 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
     logger.error(
         {
             message: err.message,
-            stack: err.stack,
             method: req.method,
             path: req.path,
             body: req.body,

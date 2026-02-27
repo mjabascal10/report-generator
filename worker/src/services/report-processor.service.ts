@@ -30,7 +30,7 @@ export class ReportProcessorService {
   }
 
   async updateReportStatus(id: string, status: string, errorMessage?: string): Promise<any> {
-    try {
+
       const report = await ReportModel.findByPk(id);
       if (!report) {
         throw new Error(`Report with ID ${id} not found`);
@@ -45,10 +45,6 @@ export class ReportProcessorService {
       logger.debug({ reportId: id, status }, 'Report status updated');
       return report;
 
-    } catch (error) {
-      logger.error({ error, reportId: id }, 'Error updating report status');
-      throw error;
-    }
   }
 
   async generateReport(reportId: string): Promise<boolean> {

@@ -37,7 +37,7 @@ export class ReportService {
     const report = await ReportModel.findByPk(id);
 
     if (!report) {
-      throw new Error(`Report not found: ${id}`);
+      throw new AppError(`Report not found: ${id}`, 404);
     }
 
     return report.toJSON();
