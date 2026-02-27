@@ -10,6 +10,71 @@ A full-stack TypeScript monorepo demonstrating asynchronous job processing with 
 - **Database**: PostgreSQL
 - **Queue**: Redis (job queue + pub/sub)
 
+## Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         FRONTEND                                │
+│                      Angular 20 + ag-Grid                       │
+│                                                                 │
+│  [Create Report Button] → Modal Form                           │
+│  [Reports Table] → Real-time status updates                    │
+└─────────────────────────────────────────────────────────────────┘
+           │                                          ↑
+           │ HTTP POST                                │ SSE
+           │ /api/reports                             │ /api/reports/stream
+           ↓                                          │
+┌─────────────────────────────────────────────────────────────────┐
+│                          BACKEND                                │
+│                    Express API (Port 3000)                      │
+│                                                                 │
+│  Routes → Controllers → Services                               │
+│                                                                 │
+│  POST   /api/reports        Create report                      │
+│  GET    /api/reports        List reports                       │
+│  GET    /api/reports/stream SSE endpoint                       │
+└─────────────────────────────────────────────────────────────────┘
+           │                           ↑
+           │                           │
+           ↓                           │
+    ┌──────────┐              ┌───────────────┐
+    │PostgreSQL│              │ Redis Pub/Sub │
+    │          │              │ report_updates│
+    │ reports  │              └───────────────┘
+    │  table   │                      ↑
+    └──────────┘                      │ PUBLISH
+           ↑                           │
+           │                           │
+           │ UPDATE                    │
+           │                           │
+    ┌──────────────────────────────────┴──────┐
+    │                                         │
+┌─────────────────────────────────────────────────────────────────┐
+│                          WORKER                                 │
+│                   Background Job Processor                      │
+│                                                                 │
+│  Loop:                                                          │
+│   1. BRPOP from Redis queue (blocking)                         │
+│   2. Update status → PROCESSING                                │
+│   3. Publish update to Redis Pub/Sub                           │
+│   4. Simulate work (5 seconds)                                 │
+│   5. Update status → COMPLETED                                 │
+│   6. Publish update to Redis Pub/Sub                           │
+└─────────────────────────────────────────────────────────────────┘
+           ↑
+           │ BRPOP
+           │
+    ┌──────────────┐
+    │ Redis Queue  │
+    │report_queue  │
+    │   [jobs]     │
+    └──────────────┘
+           ↑
+           │ LPUSH
+           │
+    [Backend enqueues jobs here]
+```
+
 ## Project Structure
 
 ```
