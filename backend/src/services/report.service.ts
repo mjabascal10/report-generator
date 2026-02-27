@@ -1,5 +1,4 @@
-import { Report } from '../models/report';
-import { CreateReportRequest, queueService } from '@report-generator/shared';
+import { ReportModel, CreateReportRequest, queueService } from '@report-generator/shared';
 
 export class ReportService {
 
@@ -12,7 +11,7 @@ export class ReportService {
       throw new Error('Requested by field is required');
     }
 
-    const report = await Report.create({
+    const report = await ReportModel.create({
       name: data.name.trim(),
       requestedBy: data.requestedBy.trim(),
       status: 'PENDING',
@@ -25,16 +24,16 @@ export class ReportService {
 
   async getAllReports() {
 
-    const reports = await Report.findAll({
+    const reports = await ReportModel.findAll({
       order: [['createdAt', 'DESC']],
     });
 
-    return reports.map((report) => report.toJSON());
+    return reports.map((report: any) => report.toJSON());
   }
 
   async getReportById(id: string) {
 
-    const report = await Report.findByPk(id);
+    const report = await ReportModel.findByPk(id);
 
     if (!report) {
       throw new Error(`Report not found: ${id}`);

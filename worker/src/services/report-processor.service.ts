@@ -1,5 +1,4 @@
-import { logger, queueService } from '@report-generator/shared';
-import Report from '../models/report';
+import { logger, queueService, ReportModel } from '@report-generator/shared';
 
 export class ReportProcessorService {
 
@@ -32,13 +31,13 @@ export class ReportProcessorService {
 
   async updateReportStatus(id: string, status: string, errorMessage?: string): Promise<any> {
     try {
-      const report = await Report.findByPk(id);
+      const report = await ReportModel.findByPk(id);
       if (!report) {
         throw new Error(`Report with ID ${id} not found`);
       }
 
       await report.update({
-        status,
+        status: status as any,
         errorMessage: errorMessage || null,
         completedAt: ['COMPLETED', 'FAILED'].includes(status) ? new Date() : null,
       });

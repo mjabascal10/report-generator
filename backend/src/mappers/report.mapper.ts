@@ -1,9 +1,8 @@
 import { ReportResponseDto } from '../dtos/report-response.dto';
-import { InferAttributes } from 'sequelize';
-import {Report} from "../models/report";
+import {Report} from "@report-generator/shared";
 
 export function toReportResponse(
-    report: Report | InferAttributes<Report>
+    report: Report
 ): ReportResponseDto {
     return {
         id: report.id,

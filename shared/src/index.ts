@@ -26,6 +26,12 @@ export * from './config/redis';
 export * from './services/queue.service';
 
 // ============================================
+// MODELS
+// ============================================
+
+export { Report as ReportModel, initializeReportModel } from './models/report.model';
+
+// ============================================
 // ERRORS
 // ============================================
 

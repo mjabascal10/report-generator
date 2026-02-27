@@ -1,19 +1,19 @@
 import { DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
-import { getDatabase } from '@report-generator/shared';
+import { getDatabase } from '../config/database';
+import { ReportStatus } from '../types/report-status';
 
 export class Report extends Model<InferAttributes<Report>, InferCreationAttributes<Report>> {
-
   declare id: CreationOptional<string>;
   declare name: string;
   declare requestedBy: string;
-  declare status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  declare status: ReportStatus;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare completedAt?: Date | null;
   declare errorMessage?: string | null;
 }
 
-export function initializeReportModel() {
+export function initializeReportModel(): void {
   Report.init(
     {
       id: {

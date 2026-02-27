@@ -1,5 +1,4 @@
-import { logger, initializeRedis } from '@report-generator/shared';
-import { initializeDatabase } from './database/connection';
+import {logger, initializeRedis, initializeDatabase, initializeReportModel} from '@report-generator/shared';
 import { app } from './app';
 import { config } from './config';
 
@@ -13,6 +12,9 @@ async function initializeConnections(): Promise<void> {
   try {
     await initializeDatabase();
     logger.info('PostgreSQL connected');
+
+    initializeReportModel();
+    logger.info('Report model initialized');
   } catch (error) {
     logger.error({ error }, 'Failed to connect to PostgreSQL');
     throw error;

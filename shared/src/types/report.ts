@@ -5,8 +5,8 @@ export interface Report {
   status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
   createdAt: Date;
   updatedAt: Date;
-  completedAt?: Date;
-  errorMessage?: string;
+  completedAt?: Date | null;
+  errorMessage?: string | null;
 }
 
 export interface CreateReportRequest {

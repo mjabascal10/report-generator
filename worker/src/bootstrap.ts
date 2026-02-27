@@ -1,6 +1,5 @@
-import { logger, initializeDatabase, initializeRedis } from '@report-generator/shared';
+import { logger, initializeDatabase, initializeRedis, initializeReportModel } from '@report-generator/shared';
 import {workerService} from './services/worker.service';
-import { initializeReportModel } from './models/report';
 
 
 async function initializeConnections(): Promise<void> {
