@@ -31,14 +31,12 @@ export class WorkerService {
         await this.processorService.processReport(job.reportId);
 
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        const errorStack = error instanceof Error ? error.stack : undefined;
-        logger.error({
-          error: errorMessage,
-          stack: errorStack,
-          errorType: typeof error,
-          errorObject: error
-        }, 'Error in processing loop');
+
+          logger.error({
+            error: error instanceof Error ? error.message : 'Unknown error',
+            errorType: typeof error,
+            errorObject: error
+          }, 'Error in processing loop');
         await this.sleep(POLL_INTERVAL);
       }
     }

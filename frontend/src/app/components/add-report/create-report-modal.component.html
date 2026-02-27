@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h4 class="modal-title">📊 Generate New Report</h4>
+  <h4 class="modal-title">Generate New Report</h4>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
 
@@ -14,7 +14,6 @@
         name="reportName"
         [(ngModel)]="reportName"
         required
-        placeholder="e.g., Sales Report Q1"
         #nameInput="ngModel"
         [class.is-invalid]="nameInput.invalid && nameInput.touched"
       />
@@ -34,7 +33,6 @@
         name="requestedBy"
         [(ngModel)]="requestedBy"
         required
-        placeholder="e.g., John Doe"
         #requestedByInput="ngModel"
         [class.is-invalid]="requestedByInput.invalid && requestedByInput.touched"
       />

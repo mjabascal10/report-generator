@@ -30,11 +30,7 @@ export class ReportProcessorService {
     }
   }
 
-  async updateReportStatus(
-    id: string,
-    status: string,
-    errorMessage?: string
-  ): Promise<any> {
+  async updateReportStatus(id: string, status: string, errorMessage?: string): Promise<any> {
     try {
       const report = await Report.findByPk(id);
       if (!report) {
@@ -49,6 +45,7 @@ export class ReportProcessorService {
 
       logger.debug({ reportId: id, status }, 'Report status updated');
       return report;
+
     } catch (error) {
       logger.error({ error, reportId: id }, 'Error updating report status');
       throw error;

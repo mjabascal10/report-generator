@@ -78,6 +78,7 @@ export class ReportSSEService {
       console.log(`Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
 
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
+
         this.reconnectTimeout = setTimeout(() => {
           if (this.eventSource?.readyState === EventSource.CLOSED) {
             console.log('Attempting to reconnect...');

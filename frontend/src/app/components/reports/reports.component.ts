@@ -121,7 +121,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
     modalRef.result.then(
       (data: { name: string; requestedBy: string }) => {
-        console.log('📝 Creating report:', data);
         this.store.createReport(data.name, data.requestedBy);
       },
       () => {
