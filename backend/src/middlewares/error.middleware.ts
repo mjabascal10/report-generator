@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import {logger} from "../../../shared/src/logger";
+import {logger} from "@report-generator/shared";
 
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     logger.error(

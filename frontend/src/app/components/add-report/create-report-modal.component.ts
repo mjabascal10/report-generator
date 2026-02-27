@@ -1,28 +1,38 @@
 import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-create-report-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./create-report-modal.component.html",
   styleUrl: "./create-report-modal.component.css"
 })
 export class CreateReportModalComponent {
   readonly activeModal = inject(NgbActiveModal);
+  private fb = inject(FormBuilder);
 
-  reportName = '';
-  requestedBy = '';
+  form = this.fb.group({
+    name: ['', Validators.required],
+    requestedBy: ['', [Validators.required]],
+  });
 
   onSubmit(): void {
-    const name = this.reportName.trim();
-    const requester = this.requestedBy.trim();
 
-    if (name && requester) {
-      this.activeModal.close({ name, requestedBy: requester });
+    if(this.form.valid) {
+      const data = this.form.value;
+      this.activeModal.close(data);
+    } else {
+      this.form.markAllAsTouched();
     }
+  }
+
+  isInvalid(formControlName: string){
+    const control = this.form.get(formControlName);
+
+    return !!(control?.invalid && (control?.dirty || control?.touched));
   }
 }
 

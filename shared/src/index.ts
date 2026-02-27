@@ -35,5 +35,5 @@ export { Report as ReportModel, initializeReportModel } from './models/report.mo
 // ERRORS
 // ============================================
 
-export * from './errors/domain-error';
+export * from './errors/app-error';
 

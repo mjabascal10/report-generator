@@ -1,14 +1,15 @@
-import { ReportModel, CreateReportRequest, queueService } from '@report-generator/shared';
+import {ReportModel, queueService, AppError} from '@report-generator/shared';
+import {CreateReportDto} from "../dtos/create-report.dto";
 
 export class ReportService {
 
-  async createReport(data: CreateReportRequest) {
+  async createReport(data: CreateReportDto) {
     if (!data.name || !data.name.trim()) {
-      throw new Error('Report name is required');
+      throw new AppError('Report name field is required', 400);
     }
 
     if (!data.requestedBy || !data.requestedBy.trim()) {
-      throw new Error('Requested by field is required');
+      throw new AppError('Requested by field is required', 400);
     }
 
     const report = await ReportModel.create({

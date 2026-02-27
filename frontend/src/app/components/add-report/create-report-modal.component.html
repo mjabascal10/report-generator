@@ -3,21 +3,18 @@
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
 
-<form (ngSubmit)="onSubmit()" #form="ngForm">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="modal-body">
     <div class="mb-3">
       <label for="reportName" class="form-label">Report Name *</label>
       <input
         type="text"
         class="form-control"
-        id="reportName"
-        name="reportName"
-        [(ngModel)]="reportName"
+        formControlName="name"
         required
-        #nameInput="ngModel"
-        [class.is-invalid]="nameInput.invalid && nameInput.touched"
+        [class.is-invalid]="isInvalid('name')"
       />
-      @if (nameInput.invalid && nameInput.touched) {
+      @if (isInvalid('name')) {
         <div class="invalid-feedback d-block">
           Report name is required
         </div>
@@ -29,14 +26,11 @@
       <input
         type="text"
         class="form-control"
-        id="requestedBy"
-        name="requestedBy"
-        [(ngModel)]="requestedBy"
+        formControlName="requestedBy"
         required
-        #requestedByInput="ngModel"
-        [class.is-invalid]="requestedByInput.invalid && requestedByInput.touched"
+        [class.is-invalid]="isInvalid('requestedBy')"
       />
-      @if (requestedByInput.invalid && requestedByInput.touched) {
+      @if (isInvalid('requestedBy')) {
         <div class="invalid-feedback d-block">
           Requested by is required
         </div>

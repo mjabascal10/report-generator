@@ -11,14 +11,9 @@ export async function createReport( req: Request<{}, {}, CreateReportDto>,
                                     res: Response,
                                     next: NextFunction) {
     try {
-        const { name, requestedBy } = req.body;
-        const report = await reportService.createReport({ name, requestedBy });
 
-        logger.info({
-                reportId: report.id
-            },
-            'Report created successfully'
-        );
+        const report = await reportService.createReport(req.body);
+        logger.info('Report created successfully');
 
         res.status(201).json(toReportResponse(report));
     } catch (error) {
